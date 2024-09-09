@@ -151,7 +151,7 @@ interface Feature {
     <main className={`${styles.main} flex min-h-screen flex-col items-center p-24 bg-white dark:bg-gray-900 text-black dark:text-white`}>
       <div className="w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex mb-12">
         <h1 className="text-4xl font-bold text-center mb-8 mt-8">
-          Digital Product Testing Instructions Generator
+          Testing Instructions Generator
         </h1>
       </div>
 
@@ -159,7 +159,7 @@ interface Feature {
         <form onSubmit={handleSubmit} className="space-y-8">
           <div>
             <label htmlFor="images" className="block text-sm font-medium mb-2">
-              Upload screenshots (5-10 images)
+              Upload screenshots (1-15 images)
             </label>
             <Input
               id="images"
@@ -173,7 +173,7 @@ interface Feature {
           
           {previews.length > 0 && (
             <div className="mt-4">
-              <h3 className="text-sm font-medium mb-2">Image Previews</h3>
+              <h3 className="text-sm font-medium mb-2">Previews</h3>
               <div className="grid grid-cols-5 gap-2">
                 {previews.map((preview, index) => (
                   <div key={index} className="relative aspect-square">
