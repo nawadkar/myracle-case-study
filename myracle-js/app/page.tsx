@@ -148,17 +148,17 @@ interface Feature {
   // }
 
   return (
-    <main className={`${styles.main} flex min-h-screen flex-col items-center p-24`}>
+    <main className={`${styles.main} flex min-h-screen flex-col items-center p-24 bg-white dark:bg-gray-900 text-black dark:text-white`}>
       <div className="w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex mb-12">
         <h1 className="text-4xl font-bold text-center mb-8 mt-8">
           Digital Product Testing Instructions Generator
         </h1>
       </div>
 
-      <div className="w-full max-w-4xl"> {/* Increased max-width */}
+      <div className="w-full max-w-4xl"> 
         <form onSubmit={handleSubmit} className="space-y-8">
           <div>
-            <label htmlFor="images" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="images" className="block text-sm font-medium mb-2">
               Upload screenshots (5-10 images)
             </label>
             <Input
@@ -167,20 +167,21 @@ interface Feature {
               accept="image/*"
               multiple
               onChange={handleFileChange}
-              className="mt-1"
+              className="mt-1 bg-white dark:bg-gray-800 text-black dark:text-white"
             />
           </div>
           
           {previews.length > 0 && (
             <div className="mt-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Image Previews</h3>
+              <h3 className="text-sm font-medium mb-2">Image Previews</h3>
               <div className="grid grid-cols-5 gap-2">
                 {previews.map((preview, index) => (
                   <div key={index} className="relative aspect-square">
                     <Image
                       src={preview} 
                       alt={`Preview ${index + 1}`} 
-                      className="object-cover w-full h-full rounded"
+                      className="object-cover rounded"
+                      layout="fill"
                     />
                   </div>
                 ))}
@@ -189,14 +190,14 @@ interface Feature {
           )}
 
           <div>
-            <label htmlFor="context" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="context" className="block text-sm font-medium mb-2">
               Context (optional)
             </label>
             <Textarea
               id="context"
               value={context}
               onChange={(e) => setContext(e.target.value)}
-              className="mt-1"
+              className="mt-1 bg-white dark:bg-gray-800 text-black dark:text-white"
               rows={3}
             />
           </div>
@@ -204,7 +205,7 @@ interface Feature {
             <Button 
               type="submit" 
               disabled={isLoading} 
-              className="bg-black text-white hover:bg-gray-800 py-3 px-10 w-auto"
+              className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 py-3 px-10 w-auto"
             >
               {isLoading ? 'Generating...' : 'Generate Testing Instructions'}
             </Button>
@@ -214,7 +215,7 @@ interface Feature {
         {instructions && (
           <div className="mt-16">
             <h2 className="text-4xl font-bold mb-8 text-center">Generated Instructions</h2>
-            <Card className="p-8 shadow-xl border border-gray-200 bg-white rounded-lg">
+            <Card className="p-8 shadow-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg">
               <CardContent className="max-h-[70vh] overflow-y-auto">
                 <FormattedInstructions instructions={instructions} />
               </CardContent>
@@ -223,14 +224,14 @@ interface Feature {
               <Button 
                 onClick={() => downloadFile('json')} 
                 disabled={isDownloading === 'json'}
-                className="bg-black text-white hover:bg-gray-800 py-3 px-6"
+                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 py-3 px-6"
               >
                 {isDownloading === 'json' ? 'Downloading...' : 'Download JSON'}
               </Button>
               <Button 
                 onClick={() => downloadFile('csv')} 
                 disabled={isDownloading === 'csv'}
-                className="bg-black text-white hover:bg-gray-800 py-3 px-6"
+                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 py-3 px-6"
               >
                 {isDownloading === 'csv' ? 'Downloading...' : 'Download CSV'}
               </Button>
