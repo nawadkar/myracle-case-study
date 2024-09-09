@@ -18,6 +18,11 @@ The Digital Product Testing Instructions Generator is a powerful web application
 - **Export Options**: Download instructions in both JSON and CSV formats.
 - **Responsive Design**: Optimized for various screen sizes and devices.
 
+## Flowchart
+![Untitled-2024-09-09-1600](https://github.com/user-attachments/assets/7ae25512-6707-41ab-88f8-065d549df809)
+
+
+
 ## Technology Stack
 
 - **Frontend**: Next.js
