@@ -15,7 +15,7 @@ const geistMono = localFont({
 
 // import { Handjet } from 'next/font/google'
 
-const handjet = Handjet({ subsets: ['latin'] })
+// const handjet = Handjet({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: "Create Next App",
