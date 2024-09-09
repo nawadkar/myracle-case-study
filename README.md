@@ -114,7 +114,7 @@ This project employs a sophisticated prompting strategy to generate detailed tes
 
 ## Usage
 
-1. Upload -15 screenshots of your digital product using the file input.
+1. Upload 1-15 screenshots of your digital product using the file input.
 2. (Optional) Provide additional context in the text area.
 3. Click "Generate Testing Instructions" to process the images.
 4. View the generated instructions in the formatted display.
