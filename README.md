@@ -1,13 +1,26 @@
-# Testing Instructions Generator
-
-## Overview
+![image](https://github.com/user-attachments/assets/3abf759f-7c6b-4b11-9f48-456309bed971)## Overview
 
 The Digital Product Testing Instructions Generator is a powerful web application designed to streamline the process of creating comprehensive test cases for digital products. By leveraging advanced AI technology, this tool automatically generates detailed, professional testing instructions based on uploaded screenshots, saving significant time and effort in quality assurance processes.
 
 Deployed Link : https://myracle-case-study.vercel.app/
 
 ## Flowchart
-![Untitled-2024-09-09-1600](https://github.com/user-attachments/assets/7ae25512-6707-41ab-88f8-065d549df809)
+
+![Excali](https://github.com/user-attachments/assets/e9cd4aa4-85d3-4812-addb-53a63ffb4d54)
+
+
+## Prompting Strategy
+
+This project employs a sophisticated prompting strategy to generate detailed test instructions from visual inputs using Google's Gemini AI model. Key aspects of the strategy include:
+
+- **Structured Output**: Utilizes PydanticOutputParser for enforcing a specific schema.
+- **Role-based Prompting**: Defines the AI's role as a professional test instruction generator.
+- **Clear Task Description**: Outlines the objective of generating instructions from images.
+- **Format Specification**: Includes explicit instructions for JSON output structure.
+- **Context Integration**: Allows for additional user-provided context to tailor results.
+- **Multimodal Input Processing**: Combines textual prompts with image data.
+- **Post-processing**: Cleans and parses the AI response into the required format.
+
 
 ## Features
 
@@ -22,6 +35,14 @@ Deployed Link : https://myracle-case-study.vercel.app/
 - **Formatted Display**: View generated instructions in a clean, easy-to-read layout.
 - **Export Options**: Download instructions in both JSON and CSV formats.
 - **Responsive Design**: Optimized for various screen sizes and devices.
+
+## Screen Shots:
+
+![image](https://github.com/user-attachments/assets/8b453ebe-3e2c-44f6-9cd2-1c222c089476)
+![image](https://github.com/user-attachments/assets/9725e6f6-f538-4ccc-8105-5d3fd4e18cb6)
+![image](https://github.com/user-attachments/assets/19534cdf-30a6-48fa-b51a-4ad5924fe95c)
+
+
 
 
 ## Technology Stack
