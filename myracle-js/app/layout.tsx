@@ -13,7 +13,7 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-import { Handjet } from 'next/font/google'
+// import { Handjet } from 'next/font/google'
 
 const handjet = Handjet({ subsets: ['latin'] })
 
