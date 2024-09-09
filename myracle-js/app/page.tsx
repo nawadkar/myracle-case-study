@@ -207,7 +207,7 @@ interface Feature {
               disabled={isLoading} 
               className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 py-3 px-10 w-auto"
             >
-              {isLoading ? 'Generating...' : 'Generate Testing Instructions'}
+              {isLoading ? 'Generating...' : 'Describe Testing Instructions'}
             </Button>
           </div>
         </form>
