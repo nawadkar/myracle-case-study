@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import FormattedInstructions from '@/components/FormattedInstructions'
 import { saveAs } from 'file-saver';
 import Papa from 'papaparse';
+import Image from 'next/image';
 import styles from './page.module.css'  // Assuming you have a CSS module for this page
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
@@ -21,6 +22,18 @@ export default function TestInstructionsGenerator() {
   const [isDownloading, setIsDownloading] = useState<'json' | 'csv' | null>(null)
   const [previews, setPreviews] = useState<string[]>([])
 
+interface TestingStep {
+  step_count: number;
+  step_description: string;
+}
+
+interface Feature {
+  description: string;
+  pre_conditions: string;
+  expected_result: string;
+  testing_steps: TestingStep[];
+}
+  
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const fileList = Array.from(e.target.files)
@@ -89,8 +102,8 @@ export default function TestInstructionsGenerator() {
         saveAs(blob, 'Test Instructions.json')
       } else {
         // Convert JSON to CSV
-        const csvData = features.flatMap((feature: any, index: number) => 
-          feature.testing_steps.map((step: any) => ({
+        const csvData = features.flatMap((feature: Feature, index: number) => 
+          feature.testing_steps.map((step: TestingStep) => ({
             'Feature Number': index + 1,
             'Description': feature.description,
             'Pre-conditions': feature.pre_conditions,
@@ -111,28 +124,28 @@ export default function TestInstructionsGenerator() {
     }
   }
 
-  const downloadCSV = async () => {
-    try {
-      const formData = new FormData()
-      files.forEach(file => formData.append('files', file))
-      formData.append('context', context)
-      formData.append('output_format', 'csv')
+  // const downloadCSV = async () => {
+  //   try {
+  //     const formData = new FormData()
+  //     files.forEach(file => formData.append('files', file))
+  //     formData.append('context', context)
+  //     formData.append('output_format', 'csv')
 
-      const response = await fetch(`${apiUrl}/generate_instructions/`, {
-        method: 'POST',
-        body: formData,
-      })
+  //     const response = await fetch(`${apiUrl}/generate_instructions/`, {
+  //       method: 'POST',
+  //       body: formData,
+  //     })
 
-      if (!response.ok) {
-        throw new Error(`Failed to download CSV`)
-      }
+  //     if (!response.ok) {
+  //       throw new Error(`Failed to download CSV`)
+  //     }
 
-      const blob = await response.blob()
-      saveAs(blob, 'Test Instructions.csv')
-    } catch (error) {
-      setError(`An error occurred while downloading CSV.`)
-    }
-  }
+  //     const blob = await response.blob()
+  //     saveAs(blob, 'Test Instructions.csv')
+  //   } catch (error) {
+  //     setError(`An error occurred while downloading CSV.`)
+  //   }
+  // }
 
   return (
     <main className={`${styles.main} flex min-h-screen flex-col items-center p-24`}>
@@ -164,7 +177,7 @@ export default function TestInstructionsGenerator() {
               <div className="grid grid-cols-5 gap-2">
                 {previews.map((preview, index) => (
                   <div key={index} className="relative aspect-square">
-                    <img 
+                    <Image
                       src={preview} 
                       alt={`Preview ${index + 1}`} 
                       className="object-cover w-full h-full rounded"
