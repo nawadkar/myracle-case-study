@@ -150,7 +150,7 @@ interface Feature {
   return (
     <main className={`${styles.main} flex min-h-screen flex-col items-center p-24 bg-white dark:bg-gray-900 text-black dark:text-white`}>
       <div className="w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex mb-12">
-        <h1 className="text-4xl font-bold text-center mb-8 mt-8">
+        <h1 className="text-4xl font-bold text-center mb-8 mt-8 w-full">
           Testing Instructions Generator
         </h1>
       </div>
