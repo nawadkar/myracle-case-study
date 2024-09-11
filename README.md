@@ -4,7 +4,7 @@
 ## Overview
 The Digital Product Testing Instructions Generator is a powerful web application designed to streamline the process of creating comprehensive test cases for digital products. By leveraging advanced AI technology, this tool automatically generates detailed, professional testing instructions based on uploaded screenshots, saving significant time and effort in quality assurance processes.
 
-Deployed Link : https://myracle-case-study.vercel.app/   (turn off dark mode if possible)
+Deployed Link : https://myracle-case-study.vercel.app/   (turn off dark mode for best experience)
 
 ## Flowchart
 
