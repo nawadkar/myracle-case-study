@@ -27,19 +27,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install aider-chat
 
-      - name: Get PR diff
-        id: diff
-        run: |
-          git fetch origin ${{ github.base_ref }}
-          git diff origin/${{ github.base_ref }}...HEAD > pr_diff.txt
-
-      - name: Run Aider Review
+      - name: Get PR diff and create review
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "${{ env.DIFF }}" | aider review \
-            --model gpt-4o \
-            --commit-message "Aider PR Review" \
-            --comment-on-pr \
-            ${{ github.event.pull_request.number }}
+          # Get the diff
+          git fetch origin ${{ github.base_ref }}
+          git diff origin/${{ github.base_ref }}...HEAD > pr_diff.txt
+          
+          # Create a message file for aider
+          echo "Please review this PR diff and provide feedback:" > message.txt
+          cat pr_diff.txt >> message.txt
+          
+          # Run aider with the correct commands
+          aider --model gpt-4 --message-file message.txt > review.txt
+          
+          # Post the review as a PR comment
+          gh pr comment ${{ github.event.pull_request.number }} --body-file review.txt
