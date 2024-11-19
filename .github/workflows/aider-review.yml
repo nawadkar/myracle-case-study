@@ -1,0 +1,45 @@
+name: Aider PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install Aider
+        run: |
+          python -m pip install --upgrade pip
+          pip install aider-chat
+
+      - name: Get PR diff
+        id: diff
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          echo "DIFF=$(git diff origin/${{ github.base_ref }}...HEAD)" >> $GITHUB_ENV
+
+      - name: Run Aider Review
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "${{ env.DIFF }}" | aider review \
+            --model gpt-4o \
+            --commit-message "Aider PR Review" \
+            --comment-on-pr \
+            ${{ github.event.pull_request.number }}
