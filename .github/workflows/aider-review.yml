@@ -41,7 +41,7 @@ jobs:
           git diff origin/${{ github.base_ref }}...HEAD > pr_diff.txt
           
           # Create a message file for aider
-          echo "Please review this PR diff and provide feedback. Focus on code quality, potential bugs, and suggested improvements. At the end of your review, after the token usage message, add a new line and clearly state whether the PR is ready to merge or not, with a brief explanation why." > message.txt
+          echo "Please review this PR diff and provide feedback. Focus on code quality, potential bugs, and suggested improvements. Include a merge recommendation with a brief explanation why, but put it at the end of your review after 'Merge Recommendation:'." > message.txt
           cat pr_diff.txt >> message.txt
           
           # Run aider with correct flags for gpt-4o
@@ -59,11 +59,21 @@ jobs:
             exit 1
           }
           
+          # Extract merge recommendation and tokens info
+          grep -A1 "Merge Recommendation:" review.txt > merge.txt || true
+          grep "Tokens:" review.txt > tokens.txt || true
+          
+          # Remove merge recommendation from main review
+          sed -i '/Merge Recommendation:/,+1d' review.txt
+          
           # Format the review for GitHub
           echo "## AI Code Review" > formatted_review.txt
           echo "\`\`\`" >> formatted_review.txt
           cat review.txt >> formatted_review.txt
-          echo -e "\n---\n**Merge Decision**: The AI reviewer will provide their merge recommendation here." >> formatted_review.txt
+          echo -e "\nToken Information:" >> formatted_review.txt
+          cat tokens.txt >> formatted_review.txt
+          echo -e "\n---\n" >> formatted_review.txt
+          cat merge.txt >> formatted_review.txt
           echo "\`\`\`" >> formatted_review.txt
           
           # Post the review as a PR comment
