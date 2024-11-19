@@ -29,7 +29,7 @@ jobs:
 
       - name: Configure GitHub CLI
         run: |
-          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
       - name: Get PR diff and create review
         env:
@@ -44,15 +44,15 @@ jobs:
           echo "Please review this PR diff and provide feedback. Focus on code quality, potential bugs, and suggested improvements:" > message.txt
           cat pr_diff.txt >> message.txt
           
-          # Run aider with non-interactive flags
-          aider --model gpt-4o \
+          # Run aider with correct flags for gpt-4o
+          aider --4o \
                 --message-file message.txt \
                 --no-git \
                 --no-auto-commits \
                 --yes-always \
                 --no-pretty \
                 --no-stream \
-                --openai-api-key "$OPENAI_API_KEY" > review.txt || {
+                --no-check-update > review.txt || {
             echo "## AI Code Review" > formatted_review.txt
             echo "Error running code review. Please check the workflow logs." >> formatted_review.txt
             gh pr comment ${{ github.event.pull_request.number }} --body-file formatted_review.txt
