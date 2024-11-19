@@ -25,11 +25,11 @@ jobs:
       - name: Install Aider and GitHub CLI
         run: |
           python -m pip install --upgrade pip
-          pip install aider-chat
+          pip install aider-chat openai
 
       - name: Configure GitHub CLI
         run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Get PR diff and create review
         env:
@@ -51,7 +51,13 @@ jobs:
                 --no-auto-commits \
                 --yes-always \
                 --no-pretty \
-                --no-stream > review.txt
+                --no-stream \
+                --openai-api-key "$OPENAI_API_KEY" > review.txt || {
+            echo "## AI Code Review" > formatted_review.txt
+            echo "Error running code review. Please check the workflow logs." >> formatted_review.txt
+            gh pr comment ${{ github.event.pull_request.number }} --body-file formatted_review.txt
+            exit 1
+          }
           
           # Format the review for GitHub
           echo "## AI Code Review" > formatted_review.txt
