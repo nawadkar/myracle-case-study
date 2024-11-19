@@ -36,15 +36,22 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Get the PR description
+          gh pr view ${{ github.event.pull_request.number }} --json body --jq .body > pr_description.txt
+          
           # Get the diff
           git fetch origin ${{ github.base_ref }}
           git diff origin/${{ github.base_ref }}...HEAD > pr_diff.txt
           
           # Create a message file for aider
           cat > message.txt << 'EOF'
-          Please review this PR diff and provide feedback. Start your response with "REVIEW_START" and use this format:
+          Please review this PR diff and provide feedback. Consider the PR description when reviewing.
+          Start your response with "REVIEW_START" and use this format:
 
           REVIEW_START
+          ### PR Description Analysis
+          - [analysis of how well the changes match the PR description]
+
           ### Code Quality
           - [quality points]
 
@@ -58,8 +65,12 @@ jobs:
           - [security points]
 
           ### Merge Decision
-          [YES/NO] - no explaination needed.
+          [YES/NO] - Brief explanation why
           EOF
+
+          echo -e "\nPR Description:\n" >> message.txt
+          cat pr_description.txt >> message.txt
+          echo -e "\nCode Changes:\n" >> message.txt
           cat pr_diff.txt >> message.txt
           
           # Run aider
