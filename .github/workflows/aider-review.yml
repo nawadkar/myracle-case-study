@@ -31,12 +31,12 @@ jobs:
         id: diff
         run: |
           git fetch origin ${{ github.base_ref }}
-          echo "DIFF=$(git diff origin/${{ github.base_ref }}...HEAD)" >> $GITHUB_ENV
+          git diff origin/${{ github.base_ref }}...HEAD > pr_diff.txt
 
       - name: Run Aider Review
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "${{ env.DIFF }}" | aider review \
             --model gpt-4o \
