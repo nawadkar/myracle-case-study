@@ -42,16 +42,23 @@ jobs:
           
           # Create a message file for aider
           cat > message.txt << 'EOF'
-          Please review this PR diff and provide feedback in the following JSON format:
-          {
-            "review": {
-              "code_quality": ["list of code quality observations"],
-              "potential_bugs": ["list of potential bugs"],
-              "improvements": ["list of suggested improvements"],
-              "security": ["list of security considerations"]
-            },
-            "merge_decision": "YES/NO - no reason"
-          }
+          Please review this PR diff and provide feedback. Start your response with "REVIEW_START" and use this format:
+
+          REVIEW_START
+          ### Code Quality
+          - [quality points]
+
+          ### Potential Bugs
+          - [bug points]
+
+          ### Suggested Improvements
+          - [improvement points]
+
+          ### Security Considerations
+          - [security points]
+
+          ### Merge Decision
+          [YES/NO] - Brief explanation why
           EOF
           cat pr_diff.txt >> message.txt
           
@@ -67,57 +74,29 @@ jobs:
 
           # Extract and format the review using Python
           python3 - << 'EOF' > formatted_review.txt
-          import json
           import re
 
           with open('raw_review.txt', 'r') as f:
               content = f.read()
 
-          # Find the JSON content
-          json_match = re.search(r'\{[\s\S]*\}', content)
-          if json_match:
-              try:
-                  review_data = json.loads(json_match.group())
-                  
-                  # Format the review
-                  output = ["## AI Code Review\n```"]
-                  
-                  # Code Quality
-                  output.append("\n### Code Quality")
-                  for item in review_data["review"]["code_quality"]:
-                      output.append(f"- {item}")
-                  
-                  # Potential Bugs
-                  output.append("\n### Potential Bugs")
-                  for item in review_data["review"]["potential_bugs"]:
-                      output.append(f"- {item}")
-                  
-                  # Improvements
-                  output.append("\n### Suggested Improvements")
-                  for item in review_data["review"]["improvements"]:
-                      output.append(f"- {item}")
-                  
-                  # Security
-                  output.append("\n### Security Considerations")
-                  for item in review_data["review"]["security"]:
-                      output.append(f"- {item}")
-                  
-                  # Token information (if available)
-                  token_match = re.search(r'Tokens:.*session\.', content)
-                  if token_match:
-                      output.append(f"\n\nToken Information:\n{token_match.group()}")
-                  
-                  # Merge decision
-                  output.append("\n---\nMerge Decision:")
-                  output.append(review_data["merge_decision"])
-                  
-                  output.append("```")
-                  
-                  print("\n".join(output))
-              except json.JSONDecodeError:
-                  print("## AI Code Review\n```\nError: Could not parse JSON response\n```")
+          # Find the review content
+          review_match = re.search(r'REVIEW_START\n([\s\S]*?)(?=Tokens:)', content)
+          token_match = re.search(r'(Tokens:.*session\.)', content)
+
+          if review_match:
+              review_content = review_match.group(1).strip()
+              
+              # Format the output
+              output = ["## AI Code Review\n```"]
+              output.append(review_content)
+              
+              if token_match:
+                  output.append(f"\nToken Information:\n{token_match.group(1)}")
+              
+              output.append("```")
+              print("\n".join(output))
           else:
-              print("## AI Code Review\n```\nError: No JSON content found in response\n```")
+              print("## AI Code Review\n```\nError: Could not find review content\n```")
           EOF
           
           # Post the review as a PR comment
