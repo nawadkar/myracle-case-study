@@ -45,7 +45,7 @@ jobs:
           cat pr_diff.txt >> message.txt
           
           # Run aider with non-interactive flags
-          aider --model gpt-4 \
+          aider --model gpt-4o \
                 --message-file message.txt \
                 --no-git \
                 --no-auto-commits \
