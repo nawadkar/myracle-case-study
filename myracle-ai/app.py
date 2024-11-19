@@ -73,6 +73,10 @@ def clean_response(response):
     return response
 
 def generate_test_instructions(images, context=None):
+    # Add error handling for empty images
+    if not images:
+        raise ValueError("No images provided")
+        
     image_parts = [
         {
             "mime_type": "image/jpeg",
@@ -84,8 +88,9 @@ def generate_test_instructions(images, context=None):
     format_instructions = parser.get_format_instructions()
 
     prompt = f"""You are an AI assistant that generates detailed and professional testing instructions for digital products.
-    You will be given a list of images that show different features of a digital product.
-    You will need to generate testing instructions for each feature.
+    You will be given {len(images)} screenshots showing different features of a digital product.
+    Please analyze each image carefully and generate comprehensive testing instructions.
+    Focus on user interactions, edge cases, and validation checks.
 
     The response should be in JSON format. \n {format_instructions}
     """
