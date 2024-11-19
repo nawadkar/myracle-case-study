@@ -97,12 +97,15 @@ jobs:
           if review_match:
               review_content = review_match.group(1).strip()
               
+              # Convert markdown headers to bold text
+              review_content = re.sub(r'### ([^\n]+)', r'**\1**', review_content)
+              
               # Format the output
               output = ["## AI Code Review\n```"]
               output.append(review_content)
               
               if token_match:
-                  output.append(f"\nToken Information:\n{token_match.group(1)}")
+                  output.append(f"\n\nToken Information:\n{token_match.group(1)}")
               
               output.append("```")
               print("\n".join(output))
