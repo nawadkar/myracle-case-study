@@ -22,10 +22,11 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install Aider
+      - name: Install Aider and GitHub CLI
         run: |
           python -m pip install --upgrade pip
           pip install aider-chat
+          gh auth setup-git
 
       - name: Get PR diff and create review
         env:
@@ -37,11 +38,23 @@ jobs:
           git diff origin/${{ github.base_ref }}...HEAD > pr_diff.txt
           
           # Create a message file for aider
-          echo "Please review this PR diff and provide feedback:" > message.txt
+          echo "Please review this PR diff and provide feedback. Focus on code quality, potential bugs, and suggested improvements:" > message.txt
           cat pr_diff.txt >> message.txt
           
-          # Run aider with the correct commands
-          aider --model gpt-4 --message-file message.txt > review.txt
+          # Run aider with non-interactive flags
+          aider --model gpt-4o \
+                --message-file message.txt \
+                --no-git \
+                --no-auto-commits \
+                --yes-always \
+                --no-pretty \
+                --no-stream > review.txt
+          
+          # Format the review for GitHub
+          echo "## AI Code Review" > formatted_review.txt
+          echo "\`\`\`" >> formatted_review.txt
+          cat review.txt >> formatted_review.txt
+          echo "\`\`\`" >> formatted_review.txt
           
           # Post the review as a PR comment
-          gh pr comment ${{ github.event.pull_request.number }} --body-file review.txt
+          gh pr comment ${{ github.event.pull_request.number }} --body-file formatted_review.txt
