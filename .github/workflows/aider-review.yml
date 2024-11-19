@@ -58,7 +58,7 @@ jobs:
           - [security points]
 
           ### Merge Decision
-          [YES/NO] - Brief explanation why
+          [YES/NO] - no explaination needed.
           EOF
           cat pr_diff.txt >> message.txt
           
