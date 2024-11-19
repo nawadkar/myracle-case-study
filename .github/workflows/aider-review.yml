@@ -41,10 +41,21 @@ jobs:
           git diff origin/${{ github.base_ref }}...HEAD > pr_diff.txt
           
           # Create a message file for aider
-          echo "Please review this PR diff and provide feedback. Focus on code quality, potential bugs, and suggested improvements. Include a merge recommendation with a brief explanation why, but put it at the end of your review after 'Merge Recommendation:'." > message.txt
+          cat > message.txt << 'EOF'
+          Please review this PR diff and provide feedback in the following JSON format:
+          {
+            "review": {
+              "code_quality": ["list of code quality observations"],
+              "potential_bugs": ["list of potential bugs"],
+              "improvements": ["list of suggested improvements"],
+              "security": ["list of security considerations"]
+            },
+            "merge_decision": "YES/NO - no reason"
+          }
+          EOF
           cat pr_diff.txt >> message.txt
           
-          # Run aider with correct flags for gpt-4o
+          # Run aider
           aider --4o \
                 --message-file message.txt \
                 --no-git \
@@ -52,29 +63,62 @@ jobs:
                 --yes-always \
                 --no-pretty \
                 --no-stream \
-                --no-check-update > review.txt || {
-            echo "## AI Code Review" > formatted_review.txt
-            echo "Error running code review. Please check the workflow logs." >> formatted_review.txt
-            gh pr comment ${{ github.event.pull_request.number }} --body-file formatted_review.txt
-            exit 1
-          }
-          
-          # Extract merge recommendation and tokens info
-          grep -A1 "Merge Recommendation:" review.txt > merge.txt || true
-          grep "Tokens:" review.txt > tokens.txt || true
-          
-          # Remove merge recommendation from main review
-          sed -i '/Merge Recommendation:/,+1d' review.txt
-          
-          # Format the review for GitHub
-          echo "## AI Code Review" > formatted_review.txt
-          echo "\`\`\`" >> formatted_review.txt
-          cat review.txt >> formatted_review.txt
-          echo -e "\nToken Information:" >> formatted_review.txt
-          cat tokens.txt >> formatted_review.txt
-          echo -e "\n---\n" >> formatted_review.txt
-          cat merge.txt >> formatted_review.txt
-          echo "\`\`\`" >> formatted_review.txt
+                --no-check-update > raw_review.txt
+
+          # Extract and format the review using Python
+          python3 - << 'EOF' > formatted_review.txt
+          import json
+          import re
+
+          with open('raw_review.txt', 'r') as f:
+              content = f.read()
+
+          # Find the JSON content
+          json_match = re.search(r'\{[\s\S]*\}', content)
+          if json_match:
+              try:
+                  review_data = json.loads(json_match.group())
+                  
+                  # Format the review
+                  output = ["## AI Code Review\n```"]
+                  
+                  # Code Quality
+                  output.append("\n### Code Quality")
+                  for item in review_data["review"]["code_quality"]:
+                      output.append(f"- {item}")
+                  
+                  # Potential Bugs
+                  output.append("\n### Potential Bugs")
+                  for item in review_data["review"]["potential_bugs"]:
+                      output.append(f"- {item}")
+                  
+                  # Improvements
+                  output.append("\n### Suggested Improvements")
+                  for item in review_data["review"]["improvements"]:
+                      output.append(f"- {item}")
+                  
+                  # Security
+                  output.append("\n### Security Considerations")
+                  for item in review_data["review"]["security"]:
+                      output.append(f"- {item}")
+                  
+                  # Token information (if available)
+                  token_match = re.search(r'Tokens:.*session\.', content)
+                  if token_match:
+                      output.append(f"\n\nToken Information:\n{token_match.group()}")
+                  
+                  # Merge decision
+                  output.append("\n---\nMerge Decision:")
+                  output.append(review_data["merge_decision"])
+                  
+                  output.append("```")
+                  
+                  print("\n".join(output))
+              except json.JSONDecodeError:
+                  print("## AI Code Review\n```\nError: Could not parse JSON response\n```")
+          else:
+              print("## AI Code Review\n```\nError: No JSON content found in response\n```")
+          EOF
           
           # Post the review as a PR comment
           gh pr comment ${{ github.event.pull_request.number }} --body-file formatted_review.txt
